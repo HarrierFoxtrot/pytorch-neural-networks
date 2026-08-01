@@ -21,6 +21,5 @@ target = torch.tensor(4.0)
 
 loss = (prediction - target) ** 2
 print("\nloss is \n", loss)
-print(loss.backward())
-
+loss.backward()
 print("dloss/dprediction: ", prediction.grad)

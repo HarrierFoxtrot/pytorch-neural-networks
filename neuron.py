@@ -13,10 +13,12 @@ target = torch.tensor(10.0)
 # training loop 
 for i in range(100):
     # forward pass
-    output = weight * x + bias  # records into the graph
+    output = weight * x + bias  # records into the graph 
+                                # can use nn.Linear (Pytorch built in linear layer)
 
     # forward pass: calculating MSE loss 
     loss = (output - target) ** 2 # records into the graph
+                                # can use nn.MSELoss() - (Pytorch built in loss functino)
 
     # backward pass
     loss.backward() # compute gradients from that graph 
