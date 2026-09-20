@@ -2,3 +2,9 @@
 graph
 graph.png
 data/
+
+# model checkpoints — regenerable by rerunning the scripts
+*.pt
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store
