@@ -28,3 +28,4 @@ for i in range (100):
     
 print(f"\nLearned weight: {model.weight.item():.4f}")
 print(f"Learned bias: {model.bias.item():.4f}")
+

@@ -247,6 +247,7 @@ for i in range (80):
     loss = sum((yout - ygt)**2 for ygt, yout in zip(ys, ypred))
     print("loss", loss.data)
 
+    # zeroed gradients to prevent .grad from accumulating
     for p in n.parameters():
         p.grad = 0.0
     # backward pass
