@@ -17,12 +17,21 @@ from torchsummary import summary
 import torch.optim as optim
 from torchmetrics.classification import MulticlassAccuracy, MulticlassPrecision, MulticlassRecall
 from torchmetrics import MetricCollection
+
+# Reproducibility: seed everything that introduces randomness -- weight init,
+# DataLoader shuffling, dropout masks, and the cv/test split below. Without
+# this, each run trains a different model AND evaluates it on a different
+# 5,000-image test subset, so results are not comparable between runs.
+SEED = 42
+torch.manual_seed(SEED)
+split_generator = torch.Generator().manual_seed(SEED)
+
 raw_train_data = MNIST(root="./data",
                      train=True, 
                      download=True
                      )
 raw_test_data = MNIST(root="./data",
-                     train=True, 
+                     train=False, 
                      download=True
                      )
 print("========Set-up Prep=======")
@@ -78,7 +87,7 @@ print(cv_size)
 test_size = len(test_data) - cv_size
 print(test_size)
 
-test_dataset, cv_dataset = random_split(test_data, [test_size, cv_size])
+test_dataset, cv_dataset = random_split(test_data, [test_size, cv_size], generator=split_generator)
 
 print(len(test_dataset))
 print(len(cv_dataset))
