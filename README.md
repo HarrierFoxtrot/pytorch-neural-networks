@@ -3,11 +3,17 @@
 This repo builds neural networks from first principles in PyTorch. The finale is a convolutional neural network at 99.19% test accuracy on MNIST. [`foundations/`](foundations/) holds the experimentation and implementation of the fundamental concepts neccessary for the progression of this repo: reverse-mode autodiff engine, activations and manual gradient descent - before reaching for the library version.
 
 ## Seeded Results Table
+[`foundations/mnist_shallow_net.py`](foundations/mnist_shallow_net.py)
+[`mnist_cnn.py`](mnist_cnn.py)
 
-| Model | Architecture | Test Accuracy |
-| :---- | :----------- | :-----------  |
-| MLP   |
-| CNN   |
+| Model | Test Accuracy | Precision | Recall |
+|:------|--------------:|----------:|-------:|
+| MLP   |    97.66%     |  97.65%   | 97.64% |
+| CNN   |    99.20%     |  99.20%   | 99.19% |
+*Accuracy micro-averaged, precision and recall macro-averaged; `SEED = 42`
+
+- Gap between MLP and CNN: 1.54pp, so CNN cut/ improved the error rate by ~66% (2.34% --> 0.80%)
+
 
 ## Building a Shallow Neural Network
 
