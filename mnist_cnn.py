@@ -166,14 +166,18 @@ scheduler = optim.lr_scheduler.LinearLR(optimizer)
 print("\n\n")
 
 
+# Accuracy is micro-averaged (total correct / total samples -- the overall
+# correct rate, and what "test accuracy" conventionally means). Precision and
+# recall stay macro-averaged so each of the 10 digits is weighted equally.
+# MNIST's test set is not balanced (892-1135 per class), so the two differ.
 training_metrics = MetricCollection({
-    "accuracy": MulticlassAccuracy(num_classes=10),
+    "accuracy": MulticlassAccuracy(num_classes=10, average="micro"),
     "precision": MulticlassPrecision(num_classes=10),
     "recall": MulticlassRecall(num_classes=10)
 }).to(device)
 
 cv_metrics = MetricCollection({
-    "accuracy": MulticlassAccuracy(num_classes=10),
+    "accuracy": MulticlassAccuracy(num_classes=10, average="micro"),
     "precision": MulticlassPrecision(num_classes=10),
     "recall": MulticlassRecall(num_classes=10)
 }).to(device)
@@ -229,7 +233,7 @@ train_loop(model, 10, loss_fn, optimizer, train_dataloader, cv_dataloader, train
 # Final evaluation on the held-out test set (touched here for the first time, using
 # the same weights train_loop just produced, no retraining/reloading needed).
 test_metrics = MetricCollection({
-    "accuracy": MulticlassAccuracy(num_classes=10),
+    "accuracy": MulticlassAccuracy(num_classes=10, average="micro"),
     "precision": MulticlassPrecision(num_classes=10),
     "recall": MulticlassRecall(num_classes=10)
 }).to(device)

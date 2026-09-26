@@ -5,9 +5,15 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as Ff 
+from torchmetrics.classification import MulticlassAccuracy, MulticlassPrecision, MulticlassRecall
+from torchmetrics import MetricCollection
+# Reproducibility: seeds weight initialisation and DataLoader shuffling.
+# MNIST's own train/test split is fixed, so no split seeding is needed here.
+SEED = 42
+torch.manual_seed(SEED)
 
 
-# covert raw pixel values from MNIST to normalised Pytorch tensor
+# convert raw pixel values from MNIST to normalised Pytorch tensor
 # nn trains on tensors (smaller pixel values 0 -1)
 
 # conversion object
@@ -53,7 +59,7 @@ loss_fn = nn.CrossEntropyLoss()
 optimiser = optim.SGD(model.parameters(), lr=0.01)
 
 # loop over train_loader
-# each batch consists of (images, labels)
+# each batch consists of (image, label)
 for epoch in range(100):
     total_loss = 0 
     for images, labels in train_loader:
@@ -69,6 +75,11 @@ for epoch in range(100):
         total_loss += loss.item()
     avg_loss = total_loss / len(train_loader)
     print(f"Epoch {epoch}: avg_loss={avg_loss:.4f}")
+test_metrics = MetricCollection({
+    "accuracy": MulticlassAccuracy(num_classes=10),
+    "precision": MulticlassPrecision(num_classes=10),
+    "recall": MulticlassRecall(num_classes=10)
+})
 
 model.eval()
 total = 0
@@ -77,14 +88,17 @@ with torch.no_grad():
     for images, labels in test_loader:
         images = images.view(images.size(0), -1)
         out = model(images)
+        test_loss = loss_fn(out, labels)
         # out.data is a 2d tensor shape [64, 10]
         # 64 rows so 64 images, each row is one image
         # walk through every row along the column to find the max value of the row (look across)
-        _, predicted = torch.max(out.data, 1)
-        total += labels.size(0)
-        correct += (labels==predicted).sum().item()
-accuracy = (correct / total ) * 100 
-print(f"Accuracy of this model on the 10000 test images: {accuracy}")
+        test_metrics.update(out, labels.argmax(dim=1))
+test_results = test_metrics.compute()
+test_metrics.reset()
+
+print("\n\n========Final Test Evaluation (unseen data)=======\n")
+print(f"Test Loss (last batch): {test_loss:.4f}\n")
+print(f"Test Metrics: {test_results}")
 
 ''''''''''
     if epoch % 10 == 0:
